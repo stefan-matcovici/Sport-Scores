@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">Sport Scores</string>
+    <string name="app_name" translatable="false">Sport Scores</string>
+    <string name="open">Open</string>
+    <string name="close" translatable="false">Close</string>
 </resources>
