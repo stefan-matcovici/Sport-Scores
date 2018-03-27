@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:title="Football"></item>
-    <item android:title="Tennis"></item>
-    <item android:title="Basketball"></item>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:title="Football" android:icon="@mipmap/ic_football"></item>
+    <item android:title="Tennis" android:icon="@mipmap/ic_tennis"></item>
+    <item android:title="Basketball" android:icon="@mipmap/ic_basketball"></item>
+    <item android:title="Settings" android:icon="@mipmap/ic_settings_black_24dp"></item>
 </menu>
