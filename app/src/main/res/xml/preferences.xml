@@ -2,6 +2,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <ListPreference
         android:summary="Current default sport is %s"
+        android:defaultValue="Football"
         android:title="Choose default sport home page"
         android:entries="@array/sports_list"
         android:entryValues="@array/sports_list_results"

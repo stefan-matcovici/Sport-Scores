@@ -6,8 +6,8 @@
         <item>Tennis</item>
     </string-array>
     <string-array name="sports_list_results">
-        <item>Football</item>
-        <item>Basketball</item>
-        <item>Tennis</item>
+        <item>football</item>
+        <item>basketball</item>
+        <item>tennis</item>
     </string-array>
 </resources>
