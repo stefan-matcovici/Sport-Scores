@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "70845200415",
+    "firebase_url": "https://sport-scores-199219.firebaseio.com",
+    "project_id": "sport-scores-199219",
+    "storage_bucket": "sport-scores-199219.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:70845200415:android:c10149ddfd92fdc9",
+        "android_client_info": {
+          "package_name": "ro.uaic.info.tppa.sportscores"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "70845200415-qk9ofn9c4ioed4tnl5ro02hb3m8eq1gg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ro.uaic.info.tppa.sportscores",
+            "certificate_hash": "c45cfa590b94a990e11112e40967c1895ec8d6fa"
+          }
+        },
+        {
+          "client_id": "70845200415-csael8opts60cid1fccd1o3vccev3a8t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAvgyKtRqHwxYXqpOuMGjGXr1aQ2opNT24"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "70845200415-csael8opts60cid1fccd1o3vccev3a8t.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
