@@ -17,7 +17,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.widget.LinearLayout;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import java.util.ArrayList;
+
+import ro.uaic.info.tppa.sportscores.adapters.EventListAdapter;
+import ro.uaic.info.tppa.sportscores.models.SportEvent;
 
 public class LiveEventsActivity extends AppCompatActivity {
 
@@ -25,6 +34,7 @@ public class LiveEventsActivity extends AppCompatActivity {
     private ActionBarDrawerToggle mBarDrawerToggle;
     private Toolbar mToolbar;
     private NavigationView mNavigationView;
+    private ListView mListView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +86,20 @@ public class LiveEventsActivity extends AppCompatActivity {
         }
 
         setHeaderImage();
+
+        // List
+        mListView = findViewById(R.id.events_list);
+
+        final ArrayList<SportEvent> sportEvents = new ArrayList<SportEvent>();
+        sportEvents.add(new SportEvent("league1", "homeTeam1", "awayTeam1", "1", "2", "1", "location1"));
+        sportEvents.add(new SportEvent("league2", "homeTeam2", "awayTeam2", "1", "2", "1",  "location2"));
+        sportEvents.add(new SportEvent("league3", "homeTeam3", "awayTeam3", "1", "2", "1", "location3"));
+        sportEvents.add(new SportEvent("league4", "homeTeam4", "awayTeam4", "1", "2", "1",  "location4"));
+        sportEvents.add(new SportEvent("league5", "homeTeam5", "awayTeam5", "1", "2", "1",  "location5"));
+
+
+        final ArrayAdapter<SportEvent> eventArrayAdapter = new EventListAdapter(this, sportEvents);
+        mListView.setAdapter(eventArrayAdapter);
 
 
     }
