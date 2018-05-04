@@ -1,10 +1,12 @@
 package ro.uaic.info.tppa.sportscores.activities.competitions.countries;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -42,12 +44,20 @@ public class ResultsActivity extends AppCompatActivity {
         Intent intent = getIntent();
         LeagueListItem league = (LeagueListItem) intent.getExtras().getSerializable("league");
 
+        ProgressDialog progress = new ProgressDialog(ResultsActivity.this);
+        progress.setMessage("Please Wait...");
+        progress.setIndeterminate(false);
+        progress.setCancelable(false);
+
+        progress.show();
+
         SportsDbHttpUtils.get("eventspastleague.php?id=" + league.getId(), null, new JsonHttpResponseHandler() {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
 
-
+                progress.dismiss();
+                Log.d("response", response.toString());
                 EventList eventList = null;
                 try {
                     eventList = objectMapper.readValue(response.toString(), EventList.class);

@@ -36,14 +36,20 @@ public class EventListAdapter extends ArrayAdapter<Event> {
         TextView homeTeamName = listItem.findViewById(R.id.homeTeam_name);
         homeTeamName.setText(currentEvent.getHomeTeam());
 
-        TextView homeTeamScore = listItem.findViewById(R.id.homeTeam_score);
-        homeTeamScore.setText(currentEvent.getHomeScore());
+        TextView score = listItem.findViewById(R.id.score);
+        score.setText(currentEvent.getHomeScore() + " : " + currentEvent.getAwayScore());
 
         TextView awayTeamName = listItem.findViewById(R.id.awayTeam_name);
         awayTeamName.setText(currentEvent.getAwayTeam());
 
-        TextView awayTeamScore = listItem.findViewById(R.id.awayTeam_score);
-        awayTeamScore.setText(currentEvent.getAwayScore());
+        TextView round  = listItem.findViewById(R.id.round);
+        round.setText(currentEvent.getRound());
+
+        TextView day  = listItem.findViewById(R.id.day);
+        day.setText(currentEvent.getDate());
+
+        TextView time  = listItem.findViewById(R.id.time);
+        time.setText(currentEvent.getTime());
 
         return listItem;
     }

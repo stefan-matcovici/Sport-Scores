@@ -1,5 +1,6 @@
 package ro.uaic.info.tppa.sportscores.activities.competitions.countries;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
@@ -19,6 +20,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import cz.msebera.android.httpclient.Header;
 import ro.uaic.info.tppa.sportscores.R;
+import ro.uaic.info.tppa.sportscores.SelectorActivity;
 import ro.uaic.info.tppa.sportscores.adapters.FixtureListAdapter;
 import ro.uaic.info.tppa.sportscores.models.sportsdb.Event;
 import ro.uaic.info.tppa.sportscores.models.sportsdb.EventList;
@@ -42,11 +44,19 @@ public class FixtureActivity extends AppCompatActivity {
         Intent intent = getIntent();
         LeagueListItem league = (LeagueListItem) intent.getExtras().getSerializable("league");
 
+        ProgressDialog progress = new ProgressDialog(FixtureActivity.this);
+        progress.setMessage("Please Wait...");
+        progress.setIndeterminate(false);
+        progress.setCancelable(false);
+
+        progress.show();
+
         SportsDbHttpUtils.get("eventsnextleague.php?id=" + league.getId(), null, new JsonHttpResponseHandler() {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
 
+                progress.dismiss();
 
                 EventList eventList = null;
                 try {

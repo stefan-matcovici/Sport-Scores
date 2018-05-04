@@ -55,15 +55,19 @@ public class StandingsActivity extends AppCompatActivity {
         tableLayout.setStretchAllColumns(true);
         progressDialog = new ProgressDialog(this);
 
+        ProgressDialog progress = new ProgressDialog(StandingsActivity.this);
+        progress.setMessage("Please Wait...");
+        progress.setIndeterminate(false);
+        progress.setCancelable(false);
 
-        Log.d(TAG, league.getId());
+        progress.show();
 
         SportsDbHttpUtils.get("lookuptable.php?l=" + league.getId(), null, new JsonHttpResponseHandler() {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
 
-                Log.d(TAG, response.toString());
+                progress.dismiss();
 
                 TableList tableList = null;
                 try {

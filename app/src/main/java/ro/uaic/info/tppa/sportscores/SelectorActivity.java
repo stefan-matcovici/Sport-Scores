@@ -1,5 +1,6 @@
 package ro.uaic.info.tppa.sportscores;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
@@ -64,13 +65,20 @@ public class SelectorActivity extends AppCompatActivity {
         final String sport = prefs.getString("default_sport", "");
 
         internalCompetitionsCardView.setOnClickListener(v -> {
+
+            ProgressDialog progress = new ProgressDialog(SelectorActivity.this);
+            progress.setMessage("Please Wait...");
+            progress.setIndeterminate(false);
+            progress.setCancelable(false);
+
+            progress.show();
+
             SportsDbHttpUtils.get("all_leagues.php", null, new JsonHttpResponseHandler() {
                 @RequiresApi(api = Build.VERSION_CODES.N)
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    // If the response is JSONObject instead of expected JSONArray
-                    Log.d("asd", "---------------- this is response : " + response);
                     try {
+                        progress.dismiss();
                         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(SelectorActivity.this);
                         final String sport = prefs.getString("default_sport", "");
 

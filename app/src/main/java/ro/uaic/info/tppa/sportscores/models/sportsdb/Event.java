@@ -21,6 +21,7 @@ public class Event {
     @JsonProperty("intAwayScore")
     String awayScore;
 
+    @JsonProperty("intRound")
     String round;
 
     @JsonProperty("strDate")

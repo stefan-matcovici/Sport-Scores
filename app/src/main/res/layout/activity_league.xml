@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/ll"
     android:layout_width="match_parent"
@@ -64,7 +63,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="5dp"
-                    android:text="See standigs"
+                    android:text="See standings"
                     android:textColor="@android:color/darker_gray" />
 
             </LinearLayout>
@@ -164,7 +163,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="5dp"
-                    android:text="Next fixtures"
+                    android:text="Next matches"
                     android:textColor="@android:color/darker_gray" />
 
             </LinearLayout>
