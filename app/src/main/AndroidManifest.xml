@@ -8,29 +8,39 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <activity android:name=".LiveEventsActivity">
+        android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+        <activity
+            android:name=".LiveEventsActivity"
+            android:parentActivityName=".SelectorActivity" />
+        <activity android:name=".PreferencesActivity" />
+        <activity android:name=".SelectorActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".PreferencesActivity" />
 
-        <service
-            android:name=".firebase.SportScoresInstanceIdService">
+        <service android:name=".firebase.SportScoresInstanceIdService">
             <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
+            </intent-filter>
+        </service>
+        <service android:name=".firebase.SportsMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
 
-        <service
-            android:name=".firebase.SportsMessagingService">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
-            </intent-filter>
-        </service>
+        <activity
+            android:name=".activities.competitions.countries.LeagueActivity"
+            android:parentActivityName=".SelectorActivity" />
+        <activity
+            android:name=".activities.competitions.countries.StandingsActivity"
+            android:parentActivityName=".activities.competitions.countries.LeagueActivity" />
+        <activity android:name=".activities.competitions.countries.ResultsActivity" />
+        <activity android:name=".activities.competitions.countries.FixtureActivity" />
+        <activity android:name=".activities.competitions.continental.LatestEvents"></activity>
     </application>
 
 </manifest>

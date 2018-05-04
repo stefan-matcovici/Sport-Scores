@@ -12,6 +12,7 @@
     <string name="settings">Settings</string>
     <string name="basketball">Basketball</string>
     <string name="tennis">Tennis</string>
-    <string name="football">Football</string>
+    <string name="football">Soccer</string>
     <string name="header_image">Header Image</string>
+    <string name="subscribe">subscribe</string>
 </resources>

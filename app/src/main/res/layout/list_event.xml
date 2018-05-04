@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <TextView
         android:id="@+id/homeTeam_name"
@@ -13,10 +14,35 @@
         android:id="@+id/homeTeam_score"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toEndOf="@id/homeTeam_name"
         android:layout_margin="20dp"
-        android:textSize="10sp"/>
+        android:layout_toEndOf="@id/homeTeam_name"
+        android:textSize="10sp" />
 
+    <TextView
+        android:id="@+id/sep"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:layout_marginTop="20dp"
+        android:layout_toEndOf="@id/homeTeam_score"
+        android:text=":"
+        android:textSize="10sp" />
 
+    <TextView
+        android:id="@+id/awayTeam_score"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:layout_toEndOf="@id/sep"
+        android:textSize="10sp" />
+
+    <TextView
+        android:id="@+id/awayTeam_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:layout_marginRight="0dp"
+        android:layout_toEndOf="@id/awayTeam_score"
+        android:textSize="10sp" />
 
 </RelativeLayout>
