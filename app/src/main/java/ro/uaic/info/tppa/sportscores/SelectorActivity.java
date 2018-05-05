@@ -15,6 +15,11 @@ import android.view.View;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONArray;
@@ -32,6 +37,7 @@ import cz.msebera.android.httpclient.Header;
 import ro.uaic.info.tppa.sportscores.activities.competitions.continental.LatestEvents;
 import ro.uaic.info.tppa.sportscores.activities.competitions.countries.LeagueActivity;
 import ro.uaic.info.tppa.sportscores.models.livescores.InternationalCompetition;
+import ro.uaic.info.tppa.sportscores.models.livescores.InternationalEvent;
 import ro.uaic.info.tppa.sportscores.models.sportsdb.LeagueList;
 import ro.uaic.info.tppa.sportscores.utils.DrawerUtil;
 import ro.uaic.info.tppa.sportscores.utils.LivescoresHttpUtils;
@@ -52,6 +58,7 @@ public class SelectorActivity extends AppCompatActivity {
     CardView intermationalCompetitionsCardView;
 
     ObjectMapper objectMapper = new ObjectMapper();
+    private DatabaseReference mDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +67,8 @@ public class SelectorActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
         DrawerUtil.getDrawer(this, toolbar);
+
+        mDatabase = FirebaseDatabase.getInstance().getReference();
 
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         final String sport = prefs.getString("default_sport", "");
@@ -110,30 +119,46 @@ public class SelectorActivity extends AppCompatActivity {
         });
 
         intermationalCompetitionsCardView.setOnClickListener(v -> {
-            LivescoresHttpUtils.get(sport.toLowerCase() + "/international_competitions", null, new JsonHttpResponseHandler() {
+
+            ProgressDialog progress = new ProgressDialog(SelectorActivity.this);
+            progress.setMessage("Please Wait...");
+            progress.setIndeterminate(false);
+            progress.setCancelable(false);
+
+            progress.show();
+
+            DatabaseReference competitions = mDatabase.child("competitions").child(sport.toLowerCase());
+            competitions.addValueEventListener(new ValueEventListener() {
                 @RequiresApi(api = Build.VERSION_CODES.N)
                 @Override
-                public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                    Log.d("asd", "---------------- this is response : " + response);
-                    try {
-                        InternationalCompetition[] internationalCompetitions = objectMapper.readValue(response.toString(), InternationalCompetition[].class);
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    progress.dismiss();
+                    List<InternationalCompetition> internationalCompetitions = new ArrayList<>();
 
-                        new MaterialDialog.Builder(SelectorActivity.this)
-                                .title("Select league")
-                                .items(Arrays.stream(internationalCompetitions).map(InternationalCompetition::getName).collect(Collectors.toList()))
-                                .itemsCallbackSingleChoice(-1, (dialog, view, which, text) -> {
-                                    Intent intent = new Intent(SelectorActivity.this, LatestEvents.class);
-                                    intent.putExtra("internationalCompetition", internationalCompetitions[which]);
-                                    startActivity(intent);
-                                    return true;
-                                })
-                                .positiveText("Choose")
-                                .show();
+                    for (DataSnapshot item_snapshot : dataSnapshot.getChildren()) {
+                        InternationalCompetition competition = new InternationalCompetition();
+                        competition.setName(item_snapshot.child("name").getValue().toString());
+                        competition.setLink(item_snapshot.child("link").getValue().toString());
 
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                        internationalCompetitions.add(competition);
                     }
+
+                    new MaterialDialog.Builder(SelectorActivity.this)
+                            .title("Select league")
+                            .items(internationalCompetitions.stream().map(InternationalCompetition::getName).collect(Collectors.toList()))
+                            .itemsCallbackSingleChoice(-1, (dialog, view, which, text) -> {
+                                Intent intent = new Intent(SelectorActivity.this, LatestEvents.class);
+                                intent.putExtra("internationalCompetition", internationalCompetitions.get(which));
+                                startActivity(intent);
+                                return true;
+                            })
+                            .positiveText("Choose")
+                            .show();
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    System.out.println(databaseError);
                 }
             });
         });
