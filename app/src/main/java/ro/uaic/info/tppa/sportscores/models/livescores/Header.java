@@ -2,7 +2,7 @@ package ro.uaic.info.tppa.sportscores.models.livescores;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-class Header {
+public class Header {
     String competition;
     @JsonProperty("competition_link")
     String competitionLink;

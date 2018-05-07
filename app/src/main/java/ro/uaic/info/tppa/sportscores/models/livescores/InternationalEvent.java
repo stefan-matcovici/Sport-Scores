@@ -7,6 +7,15 @@ public class InternationalEvent {
     String homeTeam;
     String id;
     String scoreLink;
+
+    public Header getHeader() {
+        return header;
+    }
+
+    public void setHeader(Header header) {
+        this.header = header;
+    }
+
     Header header;
 
     public String getAwayScore() {

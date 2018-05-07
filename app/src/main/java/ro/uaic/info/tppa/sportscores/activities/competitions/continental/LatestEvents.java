@@ -3,11 +3,13 @@ package ro.uaic.info.tppa.sportscores.activities.competitions.continental;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -24,9 +26,20 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -35,6 +48,8 @@ import java.util.stream.Collectors;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import cz.msebera.android.httpclient.Header;
+import cz.msebera.android.httpclient.NameValuePair;
+import cz.msebera.android.httpclient.message.BasicNameValuePair;
 import ro.uaic.info.tppa.sportscores.R;
 import ro.uaic.info.tppa.sportscores.SelectorActivity;
 import ro.uaic.info.tppa.sportscores.activities.competitions.countries.ResultsActivity;
@@ -53,6 +68,7 @@ public class LatestEvents extends AppCompatActivity {
 
     private ObjectMapper objectMapper = new ObjectMapper();
     private DatabaseReference mDatabase;
+    private ProgressDialog progress;
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +86,7 @@ public class LatestEvents extends AppCompatActivity {
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         final String sport = prefs.getString("default_sport", "");
 
-        ProgressDialog progress = new ProgressDialog(LatestEvents.this);
+        progress = new ProgressDialog(LatestEvents.this);
         progress.setMessage("Please Wait...");
         progress.setIndeterminate(false);
         progress.setCancelable(false);
@@ -98,36 +114,33 @@ public class LatestEvents extends AppCompatActivity {
                         requestParams.put("link", eventList.get(position).getScoreLink());
                         requestParams.setUseJsonStreamer(true);
 
-                        ProgressDialog progress = new ProgressDialog(LatestEvents.this);
-                        progress.setMessage("Please Wait...");
-                        progress.setIndeterminate(false);
-                        progress.setCancelable(false);
+                        PostMethodDemo postMethodDemo = new PostMethodDemo();
+                        postMethodDemo.execute("http://54.246.237.22/commentaries");
 
-                        progress.show();
 
-                        LivescoresHttpUtils.post("/commentaries", requestParams, new JsonHttpResponseHandler() {
-                            @RequiresApi(api = Build.VERSION_CODES.N)
-                            @Override
-                            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                                progress.dismiss();
-                                try {
-                                    final Commentary[] commentaries = objectMapper.readValue(response.toString(), Commentary[].class);
-
-                                    new MaterialDialog.Builder(LatestEvents.this)
-                                            .title("Summary")
-                                            .items(Arrays.asList(commentaries))
-                                            .show();
-
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-
-                            @Override
-                            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                                progress.dismiss();
-                            }
-                        });
+//                        LivescoresHttpUtils.post("/commentaries", requestParams, new JsonHttpResponseHandler() {
+//                            @RequiresApi(api = Build.VERSION_CODES.N)
+//                            @Override
+//                            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+//                                progress.dismiss();
+//                                try {
+//                                    final Commentary[] commentaries = objectMapper.readValue(response.toString(), Commentary[].class);
+//
+//                                    new MaterialDialog.Builder(LatestEvents.this)
+//                                            .title("Summary")
+//                                            .items(Arrays.asList(commentaries))
+//                                            .show();
+//
+//                                } catch (IOException e) {
+//                                    e.printStackTrace();
+//                                }
+//                            }
+//
+//                            @Override
+//                            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+//                                progress.dismiss();
+//                            }
+//                        });
                     });
 
                 }
@@ -139,75 +152,158 @@ public class LatestEvents extends AppCompatActivity {
             }
         });
 
-
-//        Query query = mDatabase.child("competitions").child(sport.toLowerCase()).orderByChild("name").equalTo(internationalCompetition.getName());
-//        query
+    }
 
 
-//        competitions.addValueEventListener(new ValueEventListener() {
-//            @RequiresApi(api = Build.VERSION_CODES.N)
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                progress.dismiss();
-//                List<InternationalEvent> events = new ArrayList<>();
-//
-//                for (DataSnapshot item_snapshot : dataSnapshot.getChildren()) {
-//                    Event event = new Event();
-//                    event.setAwayScore(item_snapshot.child("name").getValue().toString());
-//                    event.setHomeScore(item_snapshot.child("link").getValue().toString());
-////
-////
-////                    String awayScore;
-////                    String awayTeam;
-////                    String homeScore;
-////                    String homeTeam;
-////                    String id;
-////                    String scoreLink;
-////                    ro.uaic.info.tppa.sportscores.models.livescores.Header header;
-////                    internationalCompetitions.add(competition);
-//                }
-//
-//                final ArrayAdapter<InternationalEvent> eventArrayAdapter = new InternationalEventListAdapter(LatestEvents.this, Arrays.asList(eventList), false);
-//                listview.setAdapter(eventArrayAdapter);
-//
-////                new MaterialDialog.Builder(SelectorActivity.this)
-////                        .title("Select league")
-////                        .items(internationalCompetitions.stream().map(InternationalCompetition::getName).collect(Collectors.toList()))
-////                        .itemsCallbackSingleChoice(-1, (dialog, view, which, text) -> {
-////                            Intent intent = new Intent(SelectorActivity.this, LatestEvents.class);
-////                            intent.putExtra("internationalCompetition", internationalCompetitions.get(which));
-////                            startActivity(intent);
-////                            return true;
-////                        })
-////                        .positiveText("Choose")
-////                        .show();
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//                System.out.println(databaseError);
-//            }
-//        });
+    class RetrieveCommentariesTask extends AsyncTask<Void, Void, String> {
 
+        private Exception exception;
 
-        RequestParams requestParams = new RequestParams();
-        requestParams.put("link", internationalCompetition.getLink());
-        requestParams.setUseJsonStreamer(true);
-        LivescoresHttpUtils.post("/international_events", requestParams, new JsonHttpResponseHandler() {
-            @RequiresApi(api = Build.VERSION_CODES.N)
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+        protected void onPreExecute() {
+            progress.show();
+        }
 
-                final InternationalEvent[] eventList;
+        protected String doInBackground(Void... urls) {
+            try {
+                URL url = new URL("http://54.246.237.22/commentaries");
+                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setRequestMethod("POST");
+                urlConnection.setDoInput(true);
+
+                JSONObject params = new JSONObject();
                 try {
-                    eventList = objectMapper.readValue(response.toString(), InternationalEvent[].class);
+                    params.put("link", "http://www.livescore.com/soccer/england/premier-league/tottenham-hotspur-vs-watford/1-2523101/");
+                }catch (JSONException e){
+                    e.printStackTrace();
+                }
+                urlConnection.getOutputStream().write(params.toString().getBytes("UTF-8"));
 
+                try {
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+                    StringBuilder stringBuilder = new StringBuilder();
+                    String line;
+                    while ((line = bufferedReader.readLine()) != null) {
+                        stringBuilder.append(line).append("\n");
+                    }
+                    bufferedReader.close();
+                    return stringBuilder.toString();
+                } finally {
+                    urlConnection.disconnect();
+                }
+            } catch (Exception e) {
+                Log.e("ERROR", e.getMessage(), e);
+                return null;
+            }
+        }
 
+        protected void onPostExecute(String response) {
+            if (response == null) {
+                response = "THERE WAS AN ERROR";
+            }
+            progress.dismiss();
+            Log.i("INFO", response);
+
+            final Commentary[] commentaries;
+            try {
+                commentaries = objectMapper.readValue(response, Commentary[].class);
+                new MaterialDialog.Builder(LatestEvents.this)
+                        .title("Summary")
+                        .items(Arrays.asList(commentaries))
+                        .show();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    class PostMethodDemo extends AsyncTask<String , Void ,String> {
+        String server_response;
+
+        protected void onPreExecute() {
+            progress.show();
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+            URL url;
+            HttpURLConnection urlConnection = null;
+
+            try {
+                url = new URL(strings[0]);
+                urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setDoOutput(true);
+                urlConnection.setDoInput(true);
+                urlConnection.setRequestMethod("POST");
+
+                DataOutputStream wr = new DataOutputStream(urlConnection.getOutputStream ());
+
+                try {
+                    JSONObject obj = new JSONObject();
+                    obj.put("link" , "http://www.livescore.com/soccer/england/premier-league/tottenham-hotspur-vs-watford/1-2523101/");
+
+                    wr.writeBytes(obj.toString());
+                    Log.e("JSON Input", obj.toString());
+                    wr.flush();
+                    wr.close();
+                } catch (JSONException ex) {
+                    ex.printStackTrace();
+                }
+                urlConnection.connect();
+
+                int responseCode = urlConnection.getResponseCode();
+
+                if(responseCode == HttpURLConnection.HTTP_OK){
+                    server_response = readStream(urlConnection.getInputStream());
+                }
+
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            Log.e("Response", "" + server_response);
+
+            progress.dismiss();
+
+            final Commentary[] commentaries;
+            try {
+                commentaries = objectMapper.readValue(server_response, Commentary[].class);
+                new MaterialDialog.Builder(LatestEvents.this)
+                        .title("Summary")
+                        .items(Arrays.asList(commentaries))
+                        .show();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static String readStream(InputStream in) {
+        BufferedReader reader = null;
+        StringBuffer response = new StringBuffer();
+        try {
+            reader = new BufferedReader(new InputStreamReader(in));
+            String line = "";
+            while ((line = reader.readLine()) != null) {
+                response.append(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
-        });
-
+        }
+        return response.toString();
     }
 }
