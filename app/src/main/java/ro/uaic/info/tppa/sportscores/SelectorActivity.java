@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -128,7 +129,8 @@ public class SelectorActivity extends AppCompatActivity {
             progress.show();
 
             DatabaseReference competitions = mDatabase.child("competitions").child(sport.toLowerCase());
-            competitions.addValueEventListener(new ValueEventListener() {
+            competitions.addListenerForSingleValueEvent(new ValueEventListener() {
+
                 @RequiresApi(api = Build.VERSION_CODES.N)
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -139,6 +141,7 @@ public class SelectorActivity extends AppCompatActivity {
                         InternationalCompetition competition = new InternationalCompetition();
                         competition.setName(item_snapshot.child("name").getValue().toString());
                         competition.setLink(item_snapshot.child("link").getValue().toString());
+                        competition.setKey(item_snapshot.getKey());
 
                         internationalCompetitions.add(competition);
                     }
