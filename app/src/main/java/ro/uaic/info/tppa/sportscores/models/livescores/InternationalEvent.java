@@ -1,5 +1,8 @@
 package ro.uaic.info.tppa.sportscores.models.livescores;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties({"subscribed"})
 public class InternationalEvent {
     String awayScore;
     String awayTeam;
@@ -7,6 +10,10 @@ public class InternationalEvent {
     String homeTeam;
     String id;
     String scoreLink;
+
+    String minute;
+
+    public boolean subscribed;
 
     public Header getHeader() {
         return header;
@@ -64,6 +71,14 @@ public class InternationalEvent {
 
     public void setScoreLink(String scoreLink) {
         this.scoreLink = scoreLink;
+    }
+
+    public String getMinute() {
+        return minute;
+    }
+
+    public void setMinute(String minute) {
+        this.minute = minute;
     }
 
     @Override

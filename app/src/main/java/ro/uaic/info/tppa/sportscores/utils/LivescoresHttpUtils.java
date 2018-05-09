@@ -5,7 +5,7 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
 public class LivescoresHttpUtils {
-    private static final String BASE_URL = "http://54.246.237.22/";
+    public static final String BASE_URL = "http://54.246.237.22/";
 
     private static AsyncHttpClient client = new AsyncHttpClient();
 

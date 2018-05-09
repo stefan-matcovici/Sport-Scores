@@ -2,21 +2,22 @@ package ro.uaic.info.tppa.sportscores;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
+import android.app.ProgressDialog;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.database.ValueEventListener;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONArray;
@@ -67,6 +68,14 @@ public class LiveEventsActivity extends AppCompatActivity {
             }
         }
 
+        ProgressDialog progress = new ProgressDialog(LiveEventsActivity.this);
+        progress.setMessage("Please Wait...");
+        progress.setIndeterminate(false);
+        progress.setCancelable(false);
+
+        progress.show();
+
+
         LivescoresHttpUtils.get("/soccer/live_events", null, new JsonHttpResponseHandler() {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
@@ -74,18 +83,85 @@ public class LiveEventsActivity extends AppCompatActivity {
 
                 final InternationalEvent[] eventList;
                 try {
+                    progress.dismiss();
                     eventList = objectMapper.readValue(response.toString(), InternationalEvent[].class);
 
-                    final ArrayAdapter<InternationalEvent> eventArrayAdapter = new InternationalEventListAdapter(LiveEventsActivity.this, Arrays.asList(eventList), true);
+                    InternationalEventListAdapter internationalEventListAdapter = new InternationalEventListAdapter(LiveEventsActivity.this, Arrays.asList(eventList), true);
+                    final ArrayAdapter<InternationalEvent> eventArrayAdapter = internationalEventListAdapter;
                     mListView.setAdapter(eventArrayAdapter);
+                    Subscription subscription = new Subscription();
+
                     mListView.setOnItemClickListener((parent, view, position, id) -> {
-                        Subscription subscription = new Subscription();
-                        subscription.setMatchId(eventList[position].getId());
+                        InternationalEvent internationalEvent = internationalEventListAdapter.getEventsList().get(position);
 
-                        DatabaseReference subscriptions = mDatabase.child("subscriptions").child(subscription.getUserId());
-                        DatabaseReference child = subscriptions.child(subscription.getMatchId());
+                        if (internationalEvent.subscribed) {
+                            CharSequence text = "Unsubscribed";
+                            int duration = Toast.LENGTH_SHORT;
 
-                        child.setValue(0);
+                            Toast toast = Toast.makeText(LiveEventsActivity.this, text, duration);
+                            toast.show();
+
+                            subscription.setMatchId(eventList[position].getId());
+                            DatabaseReference subscriptions = mDatabase.child("subscriptions").child(subscription.getUserId());
+                            DatabaseReference child = subscriptions.child(subscription.getMatchId());
+                            child.removeValue((databaseError, databaseReference) -> {
+                                toast.show();
+                            });
+
+                            internationalEvent.subscribed = false;
+                            internationalEventListAdapter.notifyDataSetChanged();
+
+                        } else {
+                            CharSequence text = "Subscribed";
+                            int duration = Toast.LENGTH_SHORT;
+
+                            Toast toast = Toast.makeText(LiveEventsActivity.this, text, duration);
+                            toast.show();
+
+                            subscription.setMatchId(eventList[position].getId());
+                            DatabaseReference subscriptions = mDatabase.child("subscriptions").child(subscription.getUserId());
+                            DatabaseReference child = subscriptions.child(subscription.getMatchId());
+
+                            String minute = internationalEvent.getMinute();
+                            if (minute.contains("'")) {
+                                String min = internationalEvent.getMinute().substring(0, minute.indexOf("'"));
+                                child.setValue(Integer.valueOf(min));
+                            }
+                            else {
+                                child.setValue(0);
+                            }
+
+                            internationalEvent.subscribed = true;
+                            internationalEventListAdapter.notifyDataSetChanged();
+                        }
+
+
+                    });
+
+                    DatabaseReference subs = mDatabase.child("subscriptions").child(subscription.getUserId());
+                    subs.addListenerForSingleValueEvent(new ValueEventListener() {
+
+                        @RequiresApi(api = Build.VERSION_CODES.N)
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            progress.dismiss();
+
+                            for (DataSnapshot item_snapshot : dataSnapshot.getChildren()) {
+                                String matchId = item_snapshot.getKey();
+                                for (InternationalEvent internationalEvent : internationalEventListAdapter.getEventsList()) {
+                                    if (matchId.equals(internationalEvent.getId())) {
+                                        internationalEvent.subscribed = true;
+                                    }
+                                }
+
+                                internationalEventListAdapter.notifyDataSetChanged();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                            System.out.println(databaseError);
+                        }
                     });
 
                 } catch (IOException e) {

@@ -1,6 +1,7 @@
 package ro.uaic.info.tppa.sportscores.adapters;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -56,7 +57,25 @@ public class InternationalEventListAdapter extends ArrayAdapter<InternationalEve
         TextView time = listItem.findViewById(R.id.datetime);
         time.setText(currentEvent.getHeader().getDate());
 
+        TextView minute = listItem.findViewById(R.id.minute);
+        minute.setText(currentEvent.getMinute());
+
+        if (currentEvent.subscribed) {
+            listItem.findViewById(R.id.header).setBackgroundColor(Color.rgb(227, 218, 114));
+        }
+        else {
+            listItem.findViewById(R.id.header).setBackgroundColor(Color.LTGRAY);
+        }
+
 
         return listItem;
+    }
+
+    public List<InternationalEvent> getEventsList() {
+        return eventsList;
+    }
+
+    public void setEventsList(List<InternationalEvent> eventsList) {
+        this.eventsList = eventsList;
     }
 }

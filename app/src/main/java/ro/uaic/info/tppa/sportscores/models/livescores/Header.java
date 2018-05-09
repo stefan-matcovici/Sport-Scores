@@ -1,13 +1,9 @@
 package ro.uaic.info.tppa.sportscores.models.livescores;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 public class Header {
     String competition;
-    @JsonProperty("competition_link")
     String competitionLink;
     String stage;
-    @JsonProperty("stage_link")
     String stageLink;
     String date;
 
