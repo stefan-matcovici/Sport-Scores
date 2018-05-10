@@ -5,14 +5,14 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
 public class LivescoresHttpUtils {
-    public static final String BASE_URL = "http://54.246.237.22/";
+    public static final String BASE_URL = "http://34.241.165.241/";
 
     private static AsyncHttpClient client = new AsyncHttpClient();
 
     static {
-        client.setTimeout(20 * 1000);
-        client.setConnectTimeout(20 * 1000);
-        client.setResponseTimeout(20 * 1000);
+        client.setTimeout(60 * 1000);
+        client.setConnectTimeout(60 * 1000);
+        client.setResponseTimeout(60 * 1000);
     }
 
     public static void get(String url, RequestParams params, AsyncHttpResponseHandler responseHandler) {

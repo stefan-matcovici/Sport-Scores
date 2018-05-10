@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.fasterxml.jackson.core.JsonParser;
@@ -39,6 +40,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import ro.uaic.info.tppa.sportscores.LiveEventsActivity;
 import ro.uaic.info.tppa.sportscores.R;
 import ro.uaic.info.tppa.sportscores.adapters.InternationalEventListAdapter;
 import ro.uaic.info.tppa.sportscores.models.livescores.Commentary;
@@ -95,12 +97,21 @@ public class LatestEvents extends AppCompatActivity {
 
                     listview.setAdapter(eventArrayAdapter);
                     listview.setOnItemClickListener((parent, view, position, id) -> {
-                        RequestParams requestParams = new RequestParams();
-                        requestParams.put("link", eventList.get(position).getScoreLink());
-                        requestParams.setUseJsonStreamer(true);
+                        String link = eventList.get(position).getScoreLink();
 
-                        RetrieveCommentariesTask retrieveCommentariesTask = new RetrieveCommentariesTask();
-                        retrieveCommentariesTask.execute(LivescoresHttpUtils.BASE_URL + "commentaries", eventList.get(position).getScoreLink());
+                        if (link.length() != 0) {
+                            RetrieveCommentariesTask retrieveCommentariesTask = new RetrieveCommentariesTask();
+                            retrieveCommentariesTask.execute(LivescoresHttpUtils.BASE_URL + "commentaries", link);
+                        }
+                        else {
+                            CharSequence text = "No commnents available for this event";
+                            int duration = Toast.LENGTH_SHORT;
+
+                            Toast toast = Toast.makeText(LatestEvents.this, text, duration);
+                            toast.show();
+                        }
+
+
 
                     });
 

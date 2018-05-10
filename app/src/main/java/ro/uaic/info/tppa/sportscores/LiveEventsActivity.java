@@ -3,8 +3,11 @@ package ro.uaic.info.tppa.sportscores;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.ProgressDialog;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -28,6 +31,7 @@ import java.util.Arrays;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import cz.msebera.android.httpclient.Header;
+import ro.uaic.info.tppa.sportscores.activities.competitions.countries.LeagueActivity;
 import ro.uaic.info.tppa.sportscores.adapters.InternationalEventListAdapter;
 import ro.uaic.info.tppa.sportscores.models.firebase.Subscription;
 import ro.uaic.info.tppa.sportscores.models.livescores.InternationalEvent;
@@ -75,8 +79,11 @@ public class LiveEventsActivity extends AppCompatActivity {
 
         progress.show();
 
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        final String sport = prefs.getString("default_sport", "");
 
-        LivescoresHttpUtils.get("/soccer/live_events", null, new JsonHttpResponseHandler() {
+
+        LivescoresHttpUtils.get("/" + sport.toLowerCase() + "/live_events", null, new JsonHttpResponseHandler() {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
@@ -85,6 +92,18 @@ public class LiveEventsActivity extends AppCompatActivity {
                 try {
                     progress.dismiss();
                     eventList = objectMapper.readValue(response.toString(), InternationalEvent[].class);
+
+                    System.out.println(eventList.length);
+
+                    if (eventList.length == 0) {
+                        Intent intent = new Intent(LiveEventsActivity.this, SelectorActivity.class);
+                        CharSequence text = "No live event for now";
+                        int duration = Toast.LENGTH_LONG;
+
+                        Toast toast = Toast.makeText(LiveEventsActivity.this, text, duration);
+                        toast.show();
+                        startActivity(intent);
+                    }
 
                     InternationalEventListAdapter internationalEventListAdapter = new InternationalEventListAdapter(LiveEventsActivity.this, Arrays.asList(eventList), true);
                     final ArrayAdapter<InternationalEvent> eventArrayAdapter = internationalEventListAdapter;

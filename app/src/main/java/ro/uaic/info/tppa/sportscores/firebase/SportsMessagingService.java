@@ -11,6 +11,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -27,6 +28,8 @@ import ro.uaic.info.tppa.sportscores.R;
 public class SportsMessagingService extends FirebaseMessagingService {
 
     private static final String TAG = "MyFirebaseMsgService";
+    String GROUP_KEY_SCORES = "ro.uaic.info.tppa.SCORES";
+    static int id = 0;
 
     /**
      * Called when message is received.
@@ -46,9 +49,10 @@ public class SportsMessagingService extends FirebaseMessagingService {
         if (remoteMessage.getNotification() != null) {
             String messageBody = remoteMessage.getNotification().getBody();
             String icon = remoteMessage.getNotification().getIcon();
+            String title = remoteMessage.getNotification().getTitle();
             Log.d(TAG, "Message Notification Body: " + messageBody);
             Log.d(TAG, "Message icon: " + icon);
-            sendNotification(messageBody, icon);
+            sendNotification(messageBody, icon, title);
         }
     }
 
@@ -72,8 +76,9 @@ public class SportsMessagingService extends FirebaseMessagingService {
      * Create and show a simple notification containing the received FCM message.
      *
      * @param body
+     * @param title
      */
-    private void sendNotification(String body, String icon) {
+    private void sendNotification(String body, String icon, String title) {
         Intent intent = new Intent(this, LiveEventsActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
@@ -82,16 +87,19 @@ public class SportsMessagingService extends FirebaseMessagingService {
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(this, channelId)
-                        .setContentTitle("FCM Message")
+                        .setContentTitle(title)
                         .setSmallIcon(R.drawable.ic_whistle)
                         .setLargeIcon(getBitmapFromURL(icon))
                         .setContentText(body)
                         .setAutoCancel(true)
-                        .setSound(defaultSoundUri)
+                        .setGroup(GROUP_KEY_SCORES)
+                        .setSound(Uri.parse("android.resource://"+this.getPackageName()+"/"+R.raw.whistle_referee))
                         .setContentIntent(pendingIntent);
 
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+
 
         // Since android Oreo notification channel is needed.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -104,7 +112,7 @@ public class SportsMessagingService extends FirebaseMessagingService {
         }
 
         if (notificationManager != null) {
-            notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+            NotificationManagerCompat.from(this).notify(++id, notificationBuilder.build());
         }
     }
 }

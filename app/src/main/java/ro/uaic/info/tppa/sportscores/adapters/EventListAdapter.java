@@ -55,6 +55,8 @@ public class EventListAdapter extends ArrayAdapter<Event> {
         TextView round = listItem.findViewById(R.id.round);
         round.setText("round " + currentEvent.getRound());
 
+        System.out.println(currentEvent);
+
         TextView time = listItem.findViewById(R.id.datetime);
         time.setText(DateUtils.getDisplayableDateTime(currentEvent.getDate(), currentEvent.getTime()));
 

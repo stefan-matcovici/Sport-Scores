@@ -22,6 +22,7 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import ro.uaic.info.tppa.sportscores.LiveEventsActivity;
 import ro.uaic.info.tppa.sportscores.PreferencesActivity;
 import ro.uaic.info.tppa.sportscores.R;
+import ro.uaic.info.tppa.sportscores.SelectorActivity;
 
 public class DrawerUtil {
     public static void getDrawer(final AppCompatActivity activity, Toolbar toolbar) {
@@ -88,7 +89,7 @@ public class DrawerUtil {
                             Intent intent = new Intent(activity, PreferencesActivity.class);
                             view.getContext().startActivity(intent);
                         } else {
-                            Intent intent = new Intent(activity, LiveEventsActivity.class);
+                            Intent intent = new Intent(activity, SelectorActivity.class);
                             view.getContext().startActivity(intent);
                         }
                         return true;

@@ -45,9 +45,6 @@ public class InternationalEventListAdapter extends ArrayAdapter<InternationalEve
         TextView homeTeamName = listItem.findViewById(R.id.homeTeam_name);
         homeTeamName.setText(currentEvent.getHomeTeam());
 
-        TextView score = listItem.findViewById(R.id.score);
-        score.setText(currentEvent.getHomeScore() + " : " + currentEvent.getAwayScore());
-
         TextView awayTeamName = listItem.findViewById(R.id.awayTeam_name);
         awayTeamName.setText(currentEvent.getAwayTeam());
 
@@ -59,6 +56,23 @@ public class InternationalEventListAdapter extends ArrayAdapter<InternationalEve
 
         TextView minute = listItem.findViewById(R.id.minute);
         minute.setText(currentEvent.getMinute());
+
+        String[] awayScores = currentEvent.getAwayScore().split("\n");
+        String[] homeScores = currentEvent.getHomeScore().split("\n");
+
+        TextView score = listItem.findViewById(R.id.score);
+        score.setText(awayScores[0] + " : " + homeScores[0]);
+
+        StringBuilder scr = new StringBuilder();
+        for (int i=1; i< awayScores.length; i++) {
+            if (!awayScores[i].equals("(") && !awayScores[i].equals(")") ){
+                scr.append("(").append(homeScores[i]).append(" : ").append(awayScores[i]).append(") ");
+            }
+
+        }
+
+        TextView scoreDetail = listItem.findViewById(R.id.scoreDetail);
+        scoreDetail.setText(scr.toString());
 
         if (currentEvent.subscribed) {
             listItem.findViewById(R.id.header).setBackgroundColor(Color.rgb(227, 218, 114));
